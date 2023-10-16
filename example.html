@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>grbl-control example</title>
+  </head>
+  <body>
+    <button id="connect" type="button">Connect</button>
+    <div id="controls" hidden>
+      <!-- TODO -->
+      <table>
+        <tr>
+          <td>Status:</td>
+          <td id="status">?</td>
+        </tr>
+        <tr>
+          <td>Jog Up</td>
+          <td><button id="jog-up">Jog Up</button></td>
+        </tr>
+        <tr>
+          <td>Jog Down</td>
+          <td><button id="jog-down">Jog Down</button></td>
+        </tr>
+        <tr>
+          <td>Jog Left</td>
+          <td><button id="jog-left">Jog Left</button></td>
+        </tr>
+        <tr>
+          <td>Jog Right</td>
+          <td><button id="jog-right">Jog Right</button></td>
+        </tr>
+      </table>
+    </div>
+    <script src="/dist/build.js"></script>
+    <script>
+      const grbl = new Grbl.GrblController();
+      let enabled = false;
+
+      function wait(ms) {
+        return new Promise((fulfill) => setTimeout(() => fulfill(), ms));
+      }
+
+      async function updateStatus() {
+        document.getElementById('controls').removeAttribute('hidden');
+        document.getElementById('status').innerHTML = JSON.stringify(await grbl.rtQueryStatus());
+      }
+
+      const connectButton = document.getElementById('connect');
+      connectButton.onclick = () => {
+        (async () => {
+          await grbl.connect();
+          setInterval(() => updateStatus().then(), 1000);
+          updateStatus().then();
+        })()
+      }
+
+      const jogUpButton = document.getElementById('jog-up');
+      jogUpButton.onclick = () => grbl.jog({y: 1}).then();
+
+      const jogDownButton = document.getElementById('jog-down');
+      jogDownButton.onclick = () => grbl.jog({y: -1}).then();
+
+      const jogLeftButton = document.getElementById('jog-left');
+      jogLeftButton.onclick = () => grbl.jog({x: -1}).then();
+
+      const jogRightButton = document.getElementById('jog-right');
+      jogRightButton.onclick = () => grbl.jog({x: 1}).then();
+    </script>
+  </body>
+</html>
