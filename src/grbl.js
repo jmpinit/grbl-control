@@ -254,6 +254,10 @@ class GrblController {
   // TODO: Toggle Spindle Stop
   // TODO: Toggle Flood Coolant
   // TODO: Toggle Mist Coolant
+
+  disconnect() {
+    return this.port.disconnect();
+  }
 }
 
 module.exports = {
